@@ -26,6 +26,7 @@
             {
                 "highlight": true,
                 "purpose": "chat",
+                "purposename": "chat",
                 "name": "Instance for ChatGPT 4o",
                 "model": "chatgpt4o",
                 "infolink": "https://someexternallinkwithadditionalinfo.com/chatgpt"
@@ -33,6 +34,7 @@
             {
                 "highlight": false,
                 "purpose": "translate",
+                "purposename": "translate",
                 "name": "Instance for Google Gemini",
                 "model": "gemini-flash-1.5",
                 "infolink": "https://someexternallinkwithadditionalinfo.com/googlegemini"
@@ -81,7 +83,12 @@
         <tbody>
         {{#purposes}}
             <tr class="{{#highlight}}table-info{{/highlight}}">
-                <td>{{purpose}}</td>
+                <td>
+                    <div class="d-flex flex-row justify-content-between align-items-center">
+                        <span>{{purpose}}</span>
+                        {{> local_ai_manager/purposeinfoicon}}
+                    </div>
+                </td>
                 <td>{{name}}</td>
                 <td>{{model}}</td>
                 <td><a href="{{{infolink}}}">{{infolink}}</a></td>

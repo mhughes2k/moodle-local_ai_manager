@@ -25,5 +25,6 @@
 
 $string['pluginname'] = 'Single prompt';
 $string['privacy:metadata'] = 'The local ai_manager purpose subplugin "Single prompt" does not store any personal data.';
+$string['purposedescription'] = 'The purpose "Single prompt" is being used for simple instructions and responses without any additional functionality. A single text prompt is being sent to the external AI system and it will return a simple text answer.';
 $string['requestcount'] = 'text requests';
 $string['requestcount_shortened'] = 'text';

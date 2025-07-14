@@ -25,5 +25,6 @@
 
 $string['pluginname'] = 'Feedback';
 $string['privacy:metadata'] = 'The local ai_manager purpose subplugin "Feedback" does not store any personal data.';
+$string['purposedescription'] = 'The purpose "Feedback" is being used by tools that want to generate feedback for a given text. Typically, the tools are sending the text on which feedback should be created along with some instructional prompt how the feedback should be generated.';
 $string['requestcount'] = 'feedback requests';
 $string['requestcount_shortened'] = 'feedback';

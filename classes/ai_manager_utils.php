@@ -20,6 +20,7 @@ use context;
 use core\exception\moodle_exception;
 use core_plugin_manager;
 use local_ai_manager\hook\additional_user_restriction;
+use local_ai_manager\hook\purpose_usage;
 use local_ai_manager\local\connector_factory;
 use local_ai_manager\local\tenant;
 use local_ai_manager\local\userinfo;
@@ -554,5 +555,55 @@ class ai_manager_utils {
         $factory = \core\di::get(connector_factory::class);
         $purposeobject = $factory->get_purpose_by_purpose_string($purpose);
         return $purposeobject->get_available_purpose_options();
+    }
+
+    /**
+     * Returns the description of a purpose.
+     *
+     * @param string $purpose the purpose name
+     * @return string the description provided by the purpose plugin
+     */
+    public static function get_purpose_description(string $purpose): string {
+        $connectorfactory = \core\di::get(connector_factory::class);
+        $purposeinstance = $connectorfactory->get_purpose_by_purpose_string($purpose);
+        return $purposeinstance->get_description();
+    }
+
+    /**
+     * Returns the purpose usage info collected by the purpose_info hook.
+     *
+     * @return array the purpose usage info array
+     */
+    public static function get_purposes_usage_info(): array {
+        $purposeusagehook = new purpose_usage();
+        \core\di::get(\core\hook\manager::class)->dispatch($purposeusagehook);
+        $purposeusageinfo = $purposeusagehook->get_purposes_usage_info();
+
+        $returnarray = [];
+        $connectorfactory = \core\di::get(connector_factory::class);
+        foreach (\local_ai_manager\plugininfo\aipurpose::get_enabled_plugins() as $purpose) {
+            $purposeinstance = $connectorfactory->get_purpose_by_purpose_string($purpose);
+            $purposearray = [
+                    'purposename' => $purpose,
+                    'purposedisplayname' => get_string('pluginname', 'aipurpose_' . $purpose),
+                    'purposedescription' => $purposeinstance->get_description(),
+            ];
+            if (isset($purposeusageinfo[$purpose]) && !empty($purposeusageinfo[$purpose])) {
+                $data = $purposeusageinfo[$purpose];
+
+                foreach ($data as $component => $placedescriptions) {
+                    $componentarray = [];
+                    $componentarray['component'] = $component;
+                    $componentarray['componentdisplayname'] = $purposeusagehook->get_component_displayname($component);
+                    $componentarray['placedescriptions'] = [];
+                    foreach ($placedescriptions as $placedescription) {
+                        $componentarray['placedescriptions'][] = ['description' => $placedescription];
+                    }
+                    $purposearray['components'][] = $componentarray;
+                }
+            }
+            $returnarray['purposes'][] = $purposearray;
+        }
+        return $returnarray;
     }
 }

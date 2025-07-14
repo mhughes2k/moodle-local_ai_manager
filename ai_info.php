@@ -65,6 +65,7 @@ foreach ($configmanager->get_purpose_config($userinfo->get_role()) as $purpose =
     if ($instanceid === null) {
         continue;
     }
+    $templatepurpose['purposename'] = $purpose;
     $templatepurpose['purpose'] = get_string('pluginname', 'aipurpose_' . $purpose);
     $factory = \core\di::get(\local_ai_manager\local\connector_factory::class);
     $instance = $factory->get_connector_instance_by_purpose($purpose, $userinfo->get_role());

@@ -33,6 +33,15 @@ class base_purpose {
     const PARAM_ARRAY = 'array';
 
     /**
+     * Returns a localized description of the purpose.
+     *
+     * @return string the localized string describing the purpose and what it's supposed to be used for
+     */
+    public function get_description(): string {
+        return get_string('purposedescription', 'aipurpose_' . $this->get_plugin_name());
+    }
+
+    /**
      * Getter for the request options.
      *
      * @param array $options the current options which can be filtered/manipulated etc.

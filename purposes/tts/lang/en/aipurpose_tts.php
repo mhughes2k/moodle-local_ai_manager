@@ -25,5 +25,6 @@
 
 $string['pluginname'] = 'Speech generation';
 $string['privacy:metadata'] = 'The local ai_manager purpose subplugin "Speech generation" does not store any personal data.';
+$string['purposedescription'] = 'The purpose "Speech generation" is being used by tools that generate speech (as an audio file) from a given text. It also accepts some options depending on the AI system being used.';
 $string['requestcount'] = 'speech generation requests';
 $string['requestcount_shortened'] = 'speech generation';

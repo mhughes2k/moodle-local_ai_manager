@@ -42,6 +42,7 @@ class purpose_config_form extends \moodleform {
      * Form definition.
      */
     public function definition() {
+        global $OUTPUT;
         $tenant = \core\di::get(tenant::class);
         $mform = &$this->_form;
 
@@ -60,6 +61,9 @@ class purpose_config_form extends \moodleform {
                     get_string('select_tool_for_purpose', 'local_ai_manager',
                             get_string('pluginname', 'aipurpose_' . $purpose))
             );
+            $purposeinfoicon = $OUTPUT->render_from_template('local_ai_manager/purposeinfoicon', ['purposename' => $purpose]);
+            $purposeinfoicon = \core\output\html_writer::div($purposeinfoicon, 'w-100 d-flex justify-content-end mb-1');
+            $mform->addElement('html', $purposeinfoicon);
 
             $mform->addElement(
                 'select',
