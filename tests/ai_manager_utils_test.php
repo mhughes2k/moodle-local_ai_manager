@@ -18,6 +18,7 @@ namespace local_ai_manager;
 
 use aitool_chatgpt\instance;
 use local_ai_manager\hook\additional_user_restriction;
+use local_ai_manager\hook\purpose_usage;
 use local_ai_manager\local\connector_factory;
 use local_ai_manager\local\userinfo;
 use local_ai_manager\local\userusage;
@@ -488,5 +489,80 @@ final class ai_manager_utils_test extends \advanced_testcase {
         $hookmanager->phpunit_redirect_hook(additional_user_restriction::class, function($hook) {
             $hook->set_access_allowed(true);
         });
+    }
+
+    /**
+     * Tests the utility function to get the purpose usages information.
+     *
+     * It basically tests the proper formatting of the array, which then will be injected into the
+     * corresponding template.
+     *
+     * @covers \local_ai_manager\ai_manager_utils::get_purposes_usage_info
+     */
+    public function test_get_purposes_usage_info(): void {
+        $this->redirectHook(\local_ai_manager\hook\purpose_usage::class, function($hook) {
+            $hook->set_component_displayname('testcomponent1', 'displaynamecomponent1');
+            $hook->set_component_displayname('testcomponent2', 'displaynamecomponent2');
+            $hook->add_purpose_usage_description('chat', 'testcomponent1', 'testcomponent1 description first place chat');
+            $hook->add_purpose_usage_description('chat', 'testcomponent1', 'testcomponent1 description second place chat');
+            $hook->add_purpose_usage_description('chat', 'testcomponent2', 'testcomponent2 description first place chat');
+            $hook->add_purpose_usage_description('chat', 'testcomponent2', 'testcomponent2 description second place chat');
+            $hook->add_purpose_usage_description('translate', 'testcomponent1',
+                    'description of the first place for translating');
+        });
+
+        $expected = ['purposes' => []];
+        $connectorfactory = \core\di::get(connector_factory::class);
+        foreach (\local_ai_manager\plugininfo\aipurpose::get_enabled_plugins() as $purpose) {
+            $purposeinstance = $connectorfactory->get_purpose_by_purpose_string($purpose);
+            $purposearray = [
+                    'purposename' => $purpose,
+                    'purposedisplayname' => get_string('pluginname', 'aipurpose_' . $purpose),
+                    'purposedescription' => $purposeinstance->get_description(),
+            ];
+            if ($purpose === 'chat') {
+                $purposearray['components'] = [
+                        [
+                                'component' => 'testcomponent1',
+                                'componentdisplayname' => 'displaynamecomponent1',
+                                'placedescriptions' => [
+                                        [
+                                                'description' => 'testcomponent1 description first place chat',
+                                        ],
+                                        [
+                                                'description' => 'testcomponent1 description second place chat',
+                                        ],
+                                ],
+                        ],
+                        [
+                                'component' => 'testcomponent2',
+                                'componentdisplayname' => 'displaynamecomponent2',
+                                'placedescriptions' => [
+                                        [
+                                                'description' => 'testcomponent2 description first place chat',
+                                        ],
+                                        [
+                                                'description' => 'testcomponent2 description second place chat',
+                                        ],
+                                ],
+                        ],
+                ];
+            } else if ($purpose === 'translate') {
+                $purposearray['components'][] =
+                        [
+                                'component' => 'testcomponent1',
+                                'componentdisplayname' => 'displaynamecomponent1',
+                                'placedescriptions' => [
+                                        [
+                                                'description' => 'description of the first place for translating',
+                                        ],
+
+                                ],
+                        ];
+            }
+            $expected['purposes'][] = $purposearray;
+        }
+
+        $this->assertEquals($expected, ai_manager_utils::get_purposes_usage_info());
     }
 }

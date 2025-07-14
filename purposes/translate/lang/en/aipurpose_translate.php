@@ -25,5 +25,6 @@
 
 $string['pluginname'] = 'Translate';
 $string['privacy:metadata'] = 'The local ai_manager purpose subplugin "Translate" does not store any personal data.';
+$string['purposedescription'] = 'The purpose "Translate" is being used by tools that in any way want to use an external AI system to provide a translation of a text.';
 $string['requestcount'] = 'translation requests';
 $string['requestcount_shortened'] = 'translation';

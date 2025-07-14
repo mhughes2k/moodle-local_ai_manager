@@ -25,5 +25,6 @@
 
 $string['pluginname'] = 'Image to text';
 $string['privacy:metadata'] = 'The local ai_manager purpose subplugin "Image to text" does not store any personal data.';
+$string['purposedescription'] = 'The purpose "Image to text" is being used by tools that analyse images. For example, an external AI tool can be advised by a prompt to just extract text that is contained in the picture, but it also can be used to generate descriptions of images, depending on the passed prompt.';
 $string['requestcount'] = 'image to text requests';
 $string['requestcount_shortened'] = 'image to text';

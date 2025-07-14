@@ -25,5 +25,6 @@
 
 $string['pluginname'] = 'Image generation';
 $string['privacy:metadata'] = 'The local ai_manager purpose subplugin "Image generation" does not store any personal data.';
+$string['purposedescription'] = 'The purpose "Image generation" is being used by tools that are providing the user with AI generated images. Usually, a prompt describing how the image should look like is being sent along with some additional options (size, quality, ...).';
 $string['requestcount'] = 'image generation requests';
 $string['requestcount_shortened'] = 'image generation';

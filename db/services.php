@@ -75,4 +75,11 @@ $functions = [
                 'ajax' => true,
                 'capabilities' => 'local_ai_manager:viewprompts',
         ],
+        'local_ai_manager_get_purposes_usage_info' => [
+                'classname' => 'local_ai_manager\external\get_purposes_usage_info',
+                'description' => 'Gets information about the usage of the purposes by different plugins',
+                'type' => 'read',
+                'ajax' => true,
+                'capabilities' => 'local_ai_manager:use',
+        ],
 ];

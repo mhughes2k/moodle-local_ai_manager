@@ -65,6 +65,11 @@ const fetchPurposeOptions = (purpose) => fetchMany([{
     },
 }])[0];
 
+const fetchPurposesUsageInfo = () => fetchMany([{
+    methodname: 'local_ai_manager_get_purposes_usage_info',
+    args: {},
+}])[0];
+
 /**
  * Executes the call that returns the AI config object with detailed user specific configuration.
  *
@@ -101,4 +106,14 @@ export const getPurposeOptions = async(purpose) => {
         await displayException(exception);
     }
     return purposeOptions;
+};
+
+export const getPurposesUsageInfo = async() => {
+    let purposesUsageInfo = null;
+    try {
+        purposesUsageInfo = await fetchPurposesUsageInfo();
+    } catch (exception) {
+        await displayException(exception);
+    }
+    return purposesUsageInfo;
 };

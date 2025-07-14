@@ -167,3 +167,7 @@ body.limitcontentwidth #page-content {
 .local_ai_manager-prompts_view_table-date {
     width: 12%;
 }
+
+.local_ai_manager-purpose_info_icon .icon {
+    cursor: pointer;
+}
