@@ -90,6 +90,15 @@
     line-height: 20px;
 }
 
+.local_ai_manager_userquota_infobox {
+    color: #60616d;
+    font-family: "Atkinson Hyperlegible";
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 20px;
+}
+
 .local_ai_manager-userquota_limitreached {
     color: #f00;
 }

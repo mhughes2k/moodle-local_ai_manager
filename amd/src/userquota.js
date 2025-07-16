@@ -44,7 +44,9 @@ const queryCountStrings = {
     tts: 'audio requests',
     ttsShortened: 'audio',
     itt: 'image analyse requests',
-    ittShortened: 'image analyse'
+    ittShortened: 'image analyse',
+    questiongeneration: 'question generation requests',
+    questiongenerationShortened: 'question generation'
 };
 
 const fetchUserquotaData = () => fetchMany([{
