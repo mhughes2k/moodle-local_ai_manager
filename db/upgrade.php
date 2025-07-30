@@ -301,5 +301,15 @@ function xmldb_local_ai_manager_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2025022102, 'local', 'ai_manager');
     }
 
+    if ($oldversion < 2025073000) {
+        // Changing type of field apikey on table local_ai_manager_instance to text.
+        $table = new xmldb_table('local_ai_manager_instance');
+        $field = new xmldb_field('apikey', XMLDB_TYPE_TEXT, null, null, null, null, null, 'endpoint');
+        $dbman->change_field_type($table, $field);
+
+        // Ai_manager savepoint reached.
+        upgrade_plugin_savepoint(true, 2025073000, 'local', 'ai_manager');
+    }
+
     return true;
 }
