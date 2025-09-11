@@ -78,6 +78,7 @@ class connector extends base_connector {
                 'translate' => $models,
                 'itt' => $visionmodels,
                 'imggen' => $imggenmodels,
+                'questiongeneration' => $models,
         ];
     }
 
