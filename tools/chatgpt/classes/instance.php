@@ -33,7 +33,6 @@ class instance extends base_instance {
 
     #[\Override]
     protected function extend_form_definition(\MoodleQuickForm $mform): void {
-        $this->extend_text_embedding_form_definition($mform);
         aitool_option_temperature::extend_form_definition($mform, ['o1', 'o1-mini', 'o3', 'o3-mini', 'o4-mini']);
         aitool_option_azure::extend_form_definition($mform);
     }
@@ -52,19 +51,6 @@ class instance extends base_instance {
         }
         return $data;
     }
-    protected function extend_text_embedding_form_definition(\MoodleQuickForm $mform): void {
-
-        $textelementparams = ['style' => 'width: 100%'];
-
-        $endpoints = [
-            'https://api.openai.com/v1/chat/completions' => 'Chat Completion',
-            'https://api.openai.com/v1/embeddings' => 'Text Embedding',
-        ];
-        $mform->removeElement('endpoint');
-        $endpoint = $mform->createElement('select', 'endpoint', get_string('endpoint', 'local_ai_manager'),$endpoints, $textelementparams);
-        $mform->insertElementBefore($endpoint, 'apikey');
-        $mform->setType('endpoint', PARAM_URL);
-    }
 
     #[\Override]
     protected function extend_store_formdata(stdClass $data): void {
@@ -73,20 +59,15 @@ class instance extends base_instance {
 
          [$enabled, $resourcename, $deploymentid, $apiversion] = aitool_option_azure::extract_azure_data_to_store($data);
         if (!empty($enabled)) {
-            if ($data->endpoint !== 'https://api.openai.com/v1/embeddings') {
-                $endpoint = 'https://' . $resourcename .
-                        '.openai.azure.com/openai/deployments/'
-                        . $deploymentid . '/chat/embeddings?api-version=' . $apiversion;
-            } else {
-                $endpoint = 'https://' . $resourcename .
-                        '.openai.azure.com/openai/deployments/'
-                        . $deploymentid . '/chat/completions?api-version=' . $apiversion;
-                // We have an empty model because the model is preconfigured if we're using azure.
-                // So we overwrite the default "preconfigured" value by a better model name.
-            }
+            $endpoint = 'https://' . $resourcename .
+                    '.openai.azure.com/openai/deployments/'
+                    . $deploymentid . '/chat/completions?api-version=' . $apiversion;
+            // We have an empty model because the model is preconfigured if we're using azure.
+            // So we overwrite the default "preconfigured" value by a better model name.
+
             $this->set_model(aitool_option_azure::get_azure_model_name($this->get_connector()));
         } else {
-            $endpoint = $data->endpoint;//'https://api.openai.com/v1/chat/completions';
+            $endpoint = 'https://api.openai.com/v1/chat/completions';
         }
         
         $this->set_endpoint($endpoint);
