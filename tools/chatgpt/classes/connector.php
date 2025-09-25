@@ -43,7 +43,7 @@ class connector extends \local_ai_manager\base_connector {
                 'singleprompt' => $chatgptmodels,
                 'translate' => $chatgptmodels,
                 'itt' => ['gpt-4-turbo', 'gpt-4o', 'gpt-4o-mini', 'o1', 'o3', 'o4-mini'],
-                'questiongeneration' => $chatgptmodels,
+                'questiongeneration' => $chatgptmodels,                
         ];
     }
 
@@ -60,7 +60,6 @@ class connector extends \local_ai_manager\base_connector {
         */
         // phpcs:enable moodle.Commenting.TodoComment.MissingInfoInline
         $content = json_decode($result->getContents(), true);
-
         return prompt_response::create_from_result(
                 $content['model'],
                 new usage(
