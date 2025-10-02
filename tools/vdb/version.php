@@ -15,17 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version file for aipurpose_rag.
+ * Version file for aitool_vdb.
  *
- * @package    aipurpose_rag
- * @copyright  ISB Bayern, 2024
- * @author     Dr. Peter Mayer
+ * @package    aitool_vdb
+ * @copyright  2025 University of Strathclyde
+ * @author     Michael Hughes
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2025092601;
+$plugin->version  = 2025093000;
 $plugin->requires = 2023042403;
-$plugin->release = '0.0.2';
-$plugin->component = 'aipurpose_rag';
+$plugin->release = '1.0.0';
+$plugin->component = 'aitool_vdb';
 $plugin->maturity = MATURITY_ALPHA;

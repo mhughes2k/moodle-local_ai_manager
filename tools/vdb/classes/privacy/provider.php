@@ -14,18 +14,27 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace aitool_vdb\privacy;
+
+use core_privacy\local\metadata\null_provider;
+
 /**
- * Version file for aipurpose_rag.
+ * Privacy provider for aitool_vdb.
  *
- * @package    aipurpose_rag
- * @copyright  ISB Bayern, 2024
- * @author     Dr. Peter Mayer
+ * @package    aitool_vdb
+ * @copyright  2025 University of Strathclyde
+ * @author     Michael Hughes
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
+class provider implements null_provider {
 
-$plugin->version  = 2025092601;
-$plugin->requires = 2023042403;
-$plugin->release = '0.0.2';
-$plugin->component = 'aipurpose_rag';
-$plugin->maturity = MATURITY_ALPHA;
+    /**
+     * Get the language string identifier with the component's language
+     * file to explain why this plugin stores no data.
+     *
+     * @return string
+     */
+    public static function get_reason(): string {
+        return 'privacy:metadata';
+    }
+}

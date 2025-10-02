@@ -14,18 +14,27 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace aitool_vdb;
+
+use local_ai_manager\base_instance;
+
 /**
- * Version file for aipurpose_rag.
+ * Instance class for vector database connector instances.
  *
- * @package    aipurpose_rag
- * @copyright  ISB Bayern, 2024
- * @author     Dr. Peter Mayer
+ * This class provides VDB-specific configuration and form handling
+ * for vector database AI tool instances.
+ *
+ * @package    aitool_vdb
+ * @copyright  2025 University of Strathclyde
+ * @author     Michael Hughes
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
+class instance extends base_instance {
 
-$plugin->version  = 2025092601;
-$plugin->requires = 2023042403;
-$plugin->release = '0.0.2';
-$plugin->component = 'aipurpose_rag';
-$plugin->maturity = MATURITY_ALPHA;
+    #[\Override]
+    protected function extend_form_definition(\MoodleQuickForm $mform): void {
+        // Add VDB-specific form fields if needed
+        // For now, we'll rely on the base instance configuration
+        // Subclasses can override this to add specific fields
+    }
+}
