@@ -22,6 +22,7 @@ use local_ai_manager\hook\purpose_usage;
 use local_ai_manager\local\connector_factory;
 use local_ai_manager\local\userinfo;
 use local_ai_manager\local\userusage;
+use local_ai_manager\plugininfo\aipurpose;
 use stdClass;
 
 /**
@@ -518,6 +519,11 @@ final class ai_manager_utils_test extends \advanced_testcase {
         $hookmanager->phpunit_redirect_hook(additional_user_restriction::class, function($hook) {
             $hook->set_access_allowed(true);
         });
+
+        // Test if we receive a valid answer for disabled purpose subplugins.
+        aipurpose::enable_plugin('chat', false);
+        $chatpurposeconfig = ai_manager_utils::get_ai_config($user, $blockcontextid, null, ['chat'])['purposes'][0];
+        $this->assertEquals($chatpurposeconfig['available'], ai_manager_utils::AVAILABILITY_HIDDEN);
     }
 
     /**
