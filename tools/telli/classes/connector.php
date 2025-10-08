@@ -147,6 +147,11 @@ class connector extends base_connector {
         return $message;
     }
 
+    #[\Override]
+    public function allowed_mimetypes(): array {
+        return $this->wrappedconnector->allowed_mimetypes();
+    }
+
     /**
      * Sets up the wrapped connector object.
      *
