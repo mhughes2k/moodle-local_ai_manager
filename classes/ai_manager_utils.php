@@ -283,10 +283,10 @@ class ai_manager_utils {
         }
         $tenant = \core\di::get(tenant::class);
 
-        $availablepurposes = \local_ai_manager\plugininfo\aipurpose::get_enabled_plugins();
+        $installedpurposes = array_keys(core_plugin_manager::instance()->get_installed_plugins('aipurpose'));
         if (empty($selectedpurposes)) {
             // If no purpose is specified, we return the config for all purposes.
-            $selectedpurposes = $availablepurposes;
+            $selectedpurposes = $installedpurposes;
         }
 
         $availability = self::determine_availability($user, $tenant, $contextid);
@@ -478,13 +478,24 @@ class ai_manager_utils {
         $purposes = [];
         $purposeconfig = $configmanager->get_purpose_config($userinfo->get_role());
         $factory = \core\di::get(\local_ai_manager\local\connector_factory::class);
+        $enabledpurposes = \local_ai_manager\plugininfo\aipurpose::get_enabled_plugins();
         foreach (array_keys(core_plugin_manager::instance()->get_installed_plugins('aipurpose')) as $purpose) {
             if (!in_array($purpose, $selectedpurposes)) {
                 continue;
             }
+
+            if (!in_array($purpose, $enabledpurposes)) {
+                $purposes[] = [
+                        'purpose' => $purpose,
+                        'available' => self::AVAILABILITY_HIDDEN,
+                        'errormessage' => get_string('error_purposedisabled', 'local_ai_manager',
+                                get_string('pluginname', 'aipurpose_' . $purpose)),
+                ];
+                continue;
+            }
+
             $purposeinstance = $factory->get_purpose_by_purpose_string($purpose);
             $userusage = new userusage($purposeinstance, $user->id);
-
             if (empty($purposeconfig[$purpose])) {
                 $purposes[] = [
                         'purpose' => $purpose,
