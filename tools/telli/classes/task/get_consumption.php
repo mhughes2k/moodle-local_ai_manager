@@ -23,9 +23,32 @@ use aitool_telli\local\utils;
  *
  * @package    aitool_telli
  * @copyright  2025 ISB Bayern
+ * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class get_consumption extends \core\task\scheduled_task {
+    /**
+     * Epsilon tolerance for float comparison in cents.
+     *
+     * This prevents false positive reset detection due to floating-point precision issues.
+     * A reset is only detected if consumption decreases by more than this value.
+     */
+    private const EPSILON_TOLERANCE = 0.01;
+
+    /**
+     * Clock object injected via \core\di.
+     *
+     * @var \core\clock the clock object
+     */
+    private \core\clock $clock;
+
+    /**
+     * Create the task object.
+     */
+    public function __construct() {
+        $this->clock = \core\di::get(\core\clock::class);
+    }
+
     /**
      * Get a descriptive name for this task.
      *
@@ -69,7 +92,7 @@ class get_consumption extends \core\task\scheduled_task {
                 return;
             }
 
-            $timecreated = time();
+            $timecreated = $this->clock->time();
             $limitincent = (float)$usagedata['limitInCent'];
             $remaininglimitincent = (float)$usagedata['remainingLimitInCent'];
 
@@ -94,7 +117,8 @@ class get_consumption extends \core\task\scheduled_task {
             }
 
             // Check if aggregate limit was reset (current consumption is less than last recorded value).
-            if ($lastvalue !== null && $currentconsumption < $lastvalue) {
+            // Use epsilon for float comparison to avoid false positives due to floating-point precision issues.
+            if ($lastvalue !== null && ($lastvalue - $currentconsumption) > self::EPSILON_TOLERANCE) {
                 // Store the last value as aggregate before reset.
                 $aggregaterecord = new \stdClass();
                 $aggregaterecord->type = 'aggregate';
@@ -113,8 +137,48 @@ class get_consumption extends \core\task\scheduled_task {
             mtrace("Stored current consumption: {$currentconsumption}");
 
             mtrace('Telli consumption data retrieved and stored successfully.');
+
+            // Cleanup old consumption data based on retention period setting.
+            $this->cleanup_old_data();
         } catch (\moodle_exception $e) {
             mtrace('Error retrieving Telli consumption data: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Delete consumption data older than the configured retention period.
+     *
+     * @return void
+     */
+    private function cleanup_old_data() {
+        global $DB;
+
+        $retentionperiod = get_config('aitool_telli', 'retentionperiod');
+
+        // If no retention period is set or retention period = 0, skip cleanup.
+        if (empty($retentionperiod)) {
+            return;
+        }
+
+        $cutofftime = $this->clock->time() - $retentionperiod;
+
+        // Get all records that should be deleted.
+        $oldrecords = $DB->get_records_select(
+            'aitool_telli_consumption',
+            'timecreated < :cutofftime',
+            ['cutofftime' => $cutofftime]
+        );
+
+        // Delete them individually to ensure all are deleted.
+        $deletedcount = 0;
+        foreach ($oldrecords as $record) {
+            if ($DB->delete_records('aitool_telli_consumption', ['id' => $record->id])) {
+                $deletedcount++;
+            }
+        }
+
+        if ($deletedcount > 0) {
+            mtrace("Cleaned up {$deletedcount} old consumption record(s).");
         }
     }
 }
