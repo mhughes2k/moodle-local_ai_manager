@@ -16,16 +16,13 @@
 
 namespace aitool_imagen;
 
-use core\http_client;
-use Firebase\JWT\JWT;
 use local_ai_manager\base_connector;
-use local_ai_manager\base_instance;
+use local_ai_manager\base_purpose;
 use local_ai_manager\local\aitool_option_vertexai_authhandler;
 use local_ai_manager\local\prompt_response;
 use local_ai_manager\local\request_response;
 use local_ai_manager\local\unit;
 use local_ai_manager\local\usage;
-use local_ai_manager\manager;
 use local_ai_manager\request_options;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\StreamInterface;
@@ -45,9 +42,14 @@ class connector extends base_connector {
 
     #[\Override]
     public function get_models_by_purpose(): array {
-        return [
-                'imggen' => ['imagen-3.0-generate-002'],
+        $modelsbypurpose = base_purpose::get_installed_purposes_array();
+        $modelsbypurpose['imggen'] = [
+                'imagen-3.0-generate-002',
+                'imagen-4.0-generate-001',
+                'imagen-4.0-ultra-generate-001',
+                'imagen-4.0-fast-generate-001',
         ];
+        return $modelsbypurpose;
     }
 
     #[\Override]

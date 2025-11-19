@@ -17,6 +17,7 @@
 namespace aitool_dalle;
 
 use local_ai_manager\base_connector;
+use local_ai_manager\base_purpose;
 use local_ai_manager\local\aitool_option_azure;
 use local_ai_manager\local\prompt_response;
 use local_ai_manager\local\unit;
@@ -37,9 +38,9 @@ class connector extends base_connector {
 
     #[\Override]
     public function get_models_by_purpose(): array {
-        return [
-                'imggen' => ['dall-e-3', 'gpt-image-1'],
-        ];
+        $modelsbypurpose = base_purpose::get_installed_purposes_array();
+        $modelsbypurpose['imggen'] = ['dall-e-3', 'gpt-image-1'];
+        return $modelsbypurpose;
     }
 
     #[\Override]

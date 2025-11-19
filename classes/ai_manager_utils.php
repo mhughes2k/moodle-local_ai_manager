@@ -429,6 +429,16 @@ class ai_manager_utils {
         }
 
         $userinfo = new userinfo($user->id);
+        $context = context::instance_by_id($contextid);
+        if ($userinfo->get_scope() === userinfo::SCOPE_COURSES_ONLY) {
+            $parentcoursecontext = self::find_closest_parent_course_context($context);
+            if (is_null($parentcoursecontext)) {
+                $availability['available'] = self::AVAILABILITY_HIDDEN;
+                return $availability;
+            }
+        }
+
+        // From here on the checks that cause the state "disabled" are being performed.
         if ($userinfo->is_locked()) {
             $availability['available'] = self::AVAILABILITY_DISABLED;
             $availability['errormessage'] = get_string('error_http403blocked', 'local_ai_manager');
@@ -442,15 +452,6 @@ class ai_manager_utils {
             $availability['errormessage'] = get_string('error_http403notconfirmed', 'local_ai_manager')
                     . '. ' . get_string('useconfirmlink', 'local_ai_manager', $confirmlink);
             return $availability;
-        }
-
-        $context = context::instance_by_id($contextid);
-        if ($userinfo->get_scope() === userinfo::SCOPE_COURSES_ONLY) {
-            $parentcoursecontext = self::find_closest_parent_course_context($context);
-            if (is_null($parentcoursecontext)) {
-                $availability['available'] = self::AVAILABILITY_HIDDEN;
-                return $availability;
-            }
         }
 
         return $availability;

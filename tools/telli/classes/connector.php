@@ -76,6 +76,7 @@ class connector extends base_connector {
                 'feedback' => $models,
                 'singleprompt' => $models,
                 'translate' => $models,
+                'tts' => [],
                 'itt' => $visionmodels,
                 'imggen' => $imggenmodels,
                 'questiongeneration' => $models,
@@ -144,6 +145,11 @@ class connector extends base_connector {
                 break;
         }
         return $message;
+    }
+
+    #[\Override]
+    public function allowed_mimetypes(): array {
+        return $this->wrappedconnector->allowed_mimetypes();
     }
 
     /**
