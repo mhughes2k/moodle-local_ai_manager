@@ -46,10 +46,7 @@ class instance extends base_instance {
         }
         foreach (
             aitool_option_azure::add_azure_options_to_form_data(
-                $this->get_customfield2(),
-                $this->get_customfield3(),
-                $this->get_customfield4(),
-                $this->get_customfield5()
+                $this->get_customfield2()
             ) as $key => $value
         ) {
             $data->{$key} = $value;

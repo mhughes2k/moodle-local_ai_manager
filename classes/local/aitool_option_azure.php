@@ -69,16 +69,10 @@ class aitool_option_azure {
      */
     public static function add_azure_options_to_form_data(
         bool $enabled,
-        ?string $resourcename,
-        ?string $deploymentid,
-        ?string $apiversion
     ): stdClass {
         $data = new stdClass();
         $data->azure_enabled = $enabled;
         if ($enabled) {
-            $data->azure_resourcename = $resourcename;
-            $data->azure_deploymentid = $deploymentid;
-            $data->azure_apiversion = $apiversion;
         }
         return $data;
     }
