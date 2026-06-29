@@ -22,6 +22,7 @@ use GuzzleHttp\Psr7\Response;
 use local_ai_manager\local\prompt_response;
 use local_ai_manager\local\request_response;
 use local_ai_manager\local\unit;
+use local_ai_manager\plugininfo\aitool;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\StreamInterface;
 
@@ -102,7 +103,11 @@ abstract class base_connector {
      * @return string the api key
      */
     protected function get_api_key(): string {
-        return $this->instance->get_apikey();
+        $globalapikey = get_config(aitool::get_component_name_by_connector($this), 'globalapikey');
+        if (empty($globalapikey)) {
+            return $this->instance->get_apikey();
+        }
+        return $this->instance->get_useglobalapikey() ? $globalapikey : $this->instance->get_apikey();
     }
 
     /**
@@ -182,7 +187,7 @@ abstract class base_connector {
      */
     public function make_request(array $data, request_options $requestoptions): request_response {
         $client = new http_client([
-            'timeout' => get_config('local_ai_manager', 'requesttimeout'),
+            'timeout' => (int)get_config('local_ai_manager', 'requesttimeout'),
             'verify' => !empty(get_config('local_ai_manager', 'verifyssl')),
         ]);
 

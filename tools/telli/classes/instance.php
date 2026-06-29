@@ -32,6 +32,11 @@ use stdClass;
 class instance extends base_instance {
     #[\Override]
     protected function extend_form_definition(\MoodleQuickForm $mform): void {
+        // We do not want the checkbox to use a global API key if there is one. But instead want to force the usage of
+        // a global API key in this specific connector plugin.
+        if ($mform->elementExists('useglobalapikey')) {
+            $mform->removeElement('useglobalapikey');
+        }
         $globalapikey = get_config('aitool_telli', 'globalapikey');
         if (!empty($globalapikey)) {
             $mform->removeElement('apikey');
@@ -42,7 +47,13 @@ class instance extends base_instance {
         }
         $connectorfactory = \core\di::get(connector_factory::class);
         $connectorinstance = $connectorfactory->get_connector_by_connectorname($this->connector);
-        aitool_option_temperature::extend_form_definition($mform, $connectorinstance->get_models_by_purpose()['imggen']);
+        aitool_option_temperature::extend_form_definition(
+            $mform,
+            array_merge(
+                $connectorinstance->get_models_by_purpose()['imggen'],
+                ['o1', 'o1-mini', 'o3', 'o3-mini', 'o4-mini', 'gpt-5.5']
+            )
+        );
     }
 
     #[\Override]

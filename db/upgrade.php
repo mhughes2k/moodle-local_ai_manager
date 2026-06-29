@@ -31,7 +31,8 @@ use local_ai_manager\local\userinfo;
  * @param int $oldversion Version number the plugin is being upgraded from.
  */
 function xmldb_local_ai_manager_upgrade($oldversion) {
-    global $DB;
+    global $CFG, $DB;
+    require_once($CFG->dirroot . '/local/ai_manager/db/upgradelib.php');
     $dbman = $DB->get_manager();
 
     if ($oldversion < 2024080101) {
@@ -336,5 +337,51 @@ function xmldb_local_ai_manager_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2025082900, 'local', 'ai_manager');
     }
 
+    if ($oldversion < 2026020600) {
+        $table = new xmldb_table('local_ai_manager_instance');
+        $field = new xmldb_field('useglobalapikey', XMLDB_TYPE_INTEGER, '1', null, null, null, null, 'apikey');
+
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2026020600, 'local', 'ai_manager');
+    }
+
+
+
+    if ($oldversion < 2026030300) {
+
+        // Define table local_ai_manager_cmconfig to be created.
+        $table = new xmldb_table('local_ai_manager_cmconfig');
+
+        // Adding fields to table local_ai_manager_cmconfig.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('cmid', XMLDB_TYPE_INTEGER, '11', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('intvalue', XMLDB_TYPE_INTEGER, '20', null, null, null, null);
+        $table->add_field('stringvalue', XMLDB_TYPE_TEXT, null, null, null, null, null);
+
+        // Adding keys to table local_ai_manager_cmconfig.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('usermodified', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
+        $table->add_key('cmid', XMLDB_KEY_UNIQUE, ['cmid']);
+
+        // Conditionally launch create table for local_ai_manager_cmconfig.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Ai_manager savepoint reached.
+        upgrade_plugin_savepoint(true, 2026030300, 'local', 'ai_manager');
+    }
+
+    if ($oldversion < 2026042000) {
+        local_ai_manager_cleanup_legacy_azure_instance_data();
+
+        upgrade_plugin_savepoint(true, 2026042000, 'local', 'ai_manager');
+    }
     return true;
 }

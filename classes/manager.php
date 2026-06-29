@@ -146,7 +146,15 @@ class manager {
         $connectorfactory = \core\di::get(connector_factory::class);
         $instance = $connectorfactory->get_connector_instance_by_purpose($this->purpose->get_plugin_name(), $userinfo->get_role());
         if (is_null($instance)) {
-            return prompt_response::create_from_error(403, get_string('error_purposenotconfigured', 'local_ai_manager'), '');
+            return prompt_response::create_from_error(
+                403,
+                get_string(
+                    'error_purposenotconfigured',
+                    'local_ai_manager',
+                    get_string('pluginname', 'aipurpose_' . $this->purpose->get_plugin_name())
+                ),
+                ''
+            );
         }
         if (!$instance->is_enabled()) {
             return prompt_response::create_from_error(403, get_string('exception_instanceunavailable', 'local_ai_manager'), '');
@@ -194,7 +202,11 @@ class manager {
                 ''
             );
         }
+
+        // Give the purpose a chance to manipulate the prompt text.
+        $prompttext = $this->purpose->format_prompt_text($prompttext, $requestoptions);
         $promptdata = $this->connector->get_prompt_data($prompttext, $requestoptions);
+        
         $starttime = microtime(true);
         try {
             $requestresult = $this->connector->make_request($promptdata, $requestoptions);
@@ -248,6 +260,7 @@ class manager {
         }
 
         $logrecordid = $this->log_request($prompttext, $promptcompletion, $duration, $requestoptions);
+        $promptcompletion->set_logrecordid($logrecordid);
         get_ai_response_succeeded::create_from_prompt_response($promptcompletion, $logrecordid)->trigger();
 
         $promptcompletion->set_content($this->purpose->format_output($promptcompletion->get_content()));

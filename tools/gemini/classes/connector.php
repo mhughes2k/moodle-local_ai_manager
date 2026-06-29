@@ -48,6 +48,7 @@ class connector extends \local_ai_manager\base_connector {
             'imggen' => [],
             'itt' => $textmodels,
             'questiongeneration' => $textmodels,
+            'agent' => $textmodels,
         ];
     }
 
@@ -191,6 +192,30 @@ class connector extends \local_ai_manager\base_connector {
             }
         }
         return parent::make_request($data, $requestoptions);
+    }
+
+    #[\Override]
+    protected function get_endpoint_url(): string {
+        if ($this->instance->get_endpoint()) {
+            return $this->instance->get_endpoint();
+        } else if (
+            $this->instance->get_customfield2() ===
+                instance::GOOGLE_BACKEND_VERTEXAI
+        ) {
+            if (empty($this->instance->get_customfield3())) {
+                return '';
+            }
+            $projectid = json_decode($this->instance->get_customfield3())?->project_id;
+            if (empty($projectid)) {
+                return '';
+            }
+            return 'https://europe-north1-aiplatform.googleapis.com/v1/projects/' . $projectid
+                . '/locations/europe-north1/publishers/google/models/' . $this->instance->get_model()
+                . ':generateContent';
+        } else {
+            return 'https://generativelanguage.googleapis.com/v1beta/models/' . $this->instance->get_model()
+                . ':generateContent';
+        }
     }
 
     #[\Override]
